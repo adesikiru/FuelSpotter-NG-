@@ -1,7 +1,9 @@
 /**
  * Haversine formula — returns distance in km between two lat/lng points.
  */
-export function haversineDistance(lat1, lon1, lat2, lon2) {
+import { Station } from '@/types';
+
+export function haversineDistance(lat1: number, lon1: number, lat2: number, lon2: number) {
   const R = 6371 // Earth radius in km
   const dLat = toRad(lat2 - lat1)
   const dLon = toRad(lon2 - lon1)
@@ -12,7 +14,7 @@ export function haversineDistance(lat1, lon1, lat2, lon2) {
   return R * c
 }
 
-function toRad(deg) {
+function toRad(deg: number) {
   return (deg * Math.PI) / 180
 }
 
@@ -20,7 +22,7 @@ function toRad(deg) {
  * Sort an array of stations by distance from a given lat/lng.
  * Stations must have `latitude` and `longitude` fields.
  */
-export function sortByDistance(stations, userLat, userLng) {
+export function sortByDistance(stations: Station[], userLat: number, userLng: number) {
   return [...stations].sort((a, b) => {
     const distA = haversineDistance(userLat, userLng, a.latitude, a.longitude)
     const distB = haversineDistance(userLat, userLng, b.latitude, b.longitude)
@@ -31,7 +33,7 @@ export function sortByDistance(stations, userLat, userLng) {
 /**
  * Format distance for display.
  */
-export function formatDistance(km) {
+export function formatDistance(km: number) {
   if (km < 1) return `${Math.round(km * 1000)}m away`
   return `${km.toFixed(1)}km away`
 }
@@ -40,7 +42,7 @@ export function formatDistance(km) {
  * Get the user's current location via browser geolocation API.
  * Returns a Promise that resolves to { lat, lng }.
  */
-export function getUserLocation() {
+export function getUserLocation(): Promise<{lat: number, lng: number}> {
   return new Promise((resolve, reject) => {
     if (!navigator.geolocation) {
       reject(new Error('Geolocation not supported by this browser'))

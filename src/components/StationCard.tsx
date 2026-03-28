@@ -2,6 +2,8 @@ import Link from 'next/link'
 import clsx from 'clsx'
 import { timeAgo, freshnessLabel } from '@/utils/timeFormatter'
 import { getReliability } from '@/utils/reliabilityHelper'
+import { Station } from '@/types'
+
 
 const FUEL_CONFIG = {
   available: { label: 'Available', badgeClass: 'badge-available', dot: 'bg-fuel-green' },
@@ -15,7 +17,7 @@ const QUEUE_CONFIG = {
   long: { label: 'Long queue', dot: 'bg-fuel-red' },
 }
 
-function ReliabilityBars({ level, bars }) {
+function ReliabilityBars({ level, bars }: { level: string, bars: number }) {
   return (
     <div className="flex gap-0.5 items-center">
       {[1, 2, 3].map(i => (
@@ -33,7 +35,7 @@ function ReliabilityBars({ level, bars }) {
   )
 }
 
-export default function StationCard({ station, reportCount = 0 }) {
+export default function StationCard({ station, reportCount = 0 }: { station: Station, reportCount?: number }) {
   const fuel = FUEL_CONFIG[station.fuel_status] ?? FUEL_CONFIG.unknown
   const queue = station.queue_length ? QUEUE_CONFIG[station.queue_length] : null
   const freshness = freshnessLabel(station.last_updated)

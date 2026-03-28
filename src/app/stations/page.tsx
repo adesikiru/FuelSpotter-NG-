@@ -3,14 +3,16 @@ import StationsPageClient from '@/components/StationsPageClient'
 
 export const revalidate = 30
 
+import { Station, ReportCounts } from '@/types'
+
 export default async function StationsPage() {
-  let stations = []
-  let reportCounts = {}
-  let error = null
+  let stations: Station[] = []
+  let reportCounts: ReportCounts = {}
+  let error: string | null = null
 
   try {
     ;[stations, reportCounts] = await Promise.all([getStations(), getReportCounts()])
-  } catch (err) {
+  } catch (err: any) {
     error = err.message
   }
 

@@ -4,13 +4,15 @@ import { useState } from 'react'
 import clsx from 'clsx'
 import StationList from './StationList'
 import LocationRadar from './LocationRadar'
+import { Station, ReportCounts } from '@/types'
+
 
 const TABS = [
   { key: 'all', label: 'All stations' },
   { key: 'radar', label: 'Near me' },
 ]
 
-export default function StationsPageClient({ stations, reportCounts }) {
+export default function StationsPageClient({ stations, reportCounts }: { stations: Station[], reportCounts: ReportCounts }) {
   const [tab, setTab] = useState('all')
 
   return (

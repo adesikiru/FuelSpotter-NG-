@@ -1,13 +1,15 @@
 import { getStations } from '@/services/stationService'
 import ReportForm from '@/components/ReportForm'
 import { Suspense } from 'react'
+import { Station } from '@/types'
+
 
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 120
 
 export default async function ReportPage() {
-  let stations = []
+  let stations: Station[] = []
 
   try {
     stations = await getStations()

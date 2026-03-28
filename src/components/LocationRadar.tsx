@@ -4,6 +4,8 @@ import { useState, useCallback } from 'react'
 import clsx from 'clsx'
 import StationCard from './StationCard'
 import { getUserLocation, haversineDistance, formatDistance, sortByDistance } from '@/utils/distanceCalculator'
+import { Station, ReportCounts } from '@/types'
+
 
 const LAGOS_AREAS = [
   { label: 'Ikeja',           lat: 6.5955, lng: 3.3384 },
@@ -26,13 +28,13 @@ const LAGOS_AREAS = [
   { label: 'Agege',           lat: 6.6352, lng: 3.3167 },
 ]
 
-export default function LocationRadar({ stations = [], reportCounts = {} }) {
-  const [userLat, setUserLat] = useState(null)
-  const [userLng, setUserLng] = useState(null)
-  const [locationLabel, setLocationLabel] = useState(null)
+export default function LocationRadar({ stations = [], reportCounts = {} }: { stations?: Station[], reportCounts?: ReportCounts }) {
+  const [userLat, setUserLat] = useState<number | null>(null)
+  const [userLng, setUserLng] = useState<number | null>(null)
+  const [locationLabel, setLocationLabel] = useState<string | null>(null)
   const [radius, setRadius] = useState(5)
   const [gpsLoading, setGpsLoading] = useState(false)
-  const [gpsError, setGpsError] = useState(null)
+  const [gpsError, setGpsError] = useState<string | null>(null)
   const [selectedArea, setSelectedArea] = useState('')
 
   const handleGPS = useCallback(async () => {
@@ -51,7 +53,7 @@ export default function LocationRadar({ stations = [], reportCounts = {} }) {
     }
   }, [])
 
-  function handleAreaSelect(e) {
+  function handleAreaSelect(e: React.ChangeEvent<HTMLSelectElement>) {
     const val = e.target.value
     setSelectedArea(val)
     if (!val) {

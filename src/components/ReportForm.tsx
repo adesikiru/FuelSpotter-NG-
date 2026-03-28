@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import clsx from 'clsx'
 import { submitReport } from '@/services/stationService'
+import { Station } from '@/types'
+
 
 const FUEL_OPTIONS = [
   { value: 'available', label: 'Available', icon: '⛽', color: 'text-fuel-green' },
@@ -16,7 +18,7 @@ const QUEUE_OPTIONS = [
   { value: 'long', label: 'Long', icon: '🔴', desc: '30+ cars' },
 ]
 
-function RadioCard({ option, name, selected, onChange }) {
+function RadioCard({ option, name, selected, onChange }: { option: { value: string, label: string, icon: string, color?: string, desc?: string }, name: string, selected: string, onChange: (val: string) => void }) {
   return (
     <label
       className={clsx(
@@ -45,7 +47,7 @@ function RadioCard({ option, name, selected, onChange }) {
   )
 }
 
-export default function ReportForm({ stations }) {
+export default function ReportForm({ stations }: { stations: Station[] }) {
   const searchParams = useSearchParams()
   const router = useRouter()
 
@@ -55,7 +57,7 @@ export default function ReportForm({ stations }) {
   const [comment, setComment] = useState('')
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
-  const [error, setError] = useState(null)
+  const [error, setError] = useState<string | null>(null)
 
   // Pre-fill station from query param (?station=id)
   useEffect(() => {
@@ -66,7 +68,7 @@ export default function ReportForm({ stations }) {
   // Hide queue selector when no fuel
   const showQueue = fuelStatus === 'available'
 
-  async function handleSubmit(e) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!stationId || !fuelStatus) {
       setError('Please select a station and fuel status.')
@@ -83,8 +85,8 @@ export default function ReportForm({ stations }) {
     try {
       await submitReport({
         stationId,
-        fuelStatus,
-        queueLength: fuelStatus === 'available' ? queueLength : null,
+        fuelStatus: fuelStatus as import('@/types').FuelStatus,
+        queueLength: (fuelStatus === 'available' ? queueLength : null) as import('@/types').QueueLength,
         comment,
       })
       setSuccess(true)
@@ -94,7 +96,7 @@ export default function ReportForm({ stations }) {
       setComment('')
       // Redirect to stations after 2.5s
       setTimeout(() => router.push('/stations'), 2500)
-    } catch (err) {
+    } catch (err: any) {
       setError(err.message ?? 'Something went wrong. Please try again.')
     } finally {
       setLoading(false)

@@ -7,10 +7,13 @@
 @layer base {
   html {
     font-family: 'DM Sans', sans-serif;
+    background-color: #0a0a0f;
   }
 
   body {
     @apply bg-fuel-bg text-fuel-text antialiased;
+    min-height: 100vh;
+    background-color: #0a0a0f;
   }
 }
 
@@ -18,7 +21,7 @@
   .btn-primary {
     @apply bg-fuel-accent text-white font-medium px-5 py-3 rounded-xl 
            hover:bg-orange-600 active:scale-95 transition-all duration-150 
-           inline-flex items-center gap-2 text-sm;
+           inline-flex items-center gap-2 text-sm shadow-lg shadow-orange-500/10;
   }
 
   .btn-outline {
@@ -28,14 +31,14 @@
   }
 
   .card {
-    @apply bg-fuel-card border border-fuel-border rounded-2xl;
+    @apply bg-fuel-card border border-fuel-border rounded-2xl shadow-xl shadow-black/20;
   }
 
   .input-field {
     @apply w-full bg-fuel-bg border border-fuel-border rounded-xl px-4 py-2.5 
            text-fuel-text text-sm outline-none 
-           focus:border-fuel-accent transition-colors duration-150 
-           placeholder:text-fuel-muted;
+           focus:border-fuel-accent focus:ring-1 focus:ring-fuel-accent/50 
+           transition-all duration-150 placeholder:text-fuel-muted;
   }
 
   .badge-available {
@@ -52,4 +55,39 @@
     @apply bg-yellow-500/15 text-yellow-400 border border-yellow-500/30 
            text-xs font-medium uppercase tracking-wide px-2.5 py-1 rounded-full;
   }
+
+  /* Entrance Animations */
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes slide-up {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .animate-fade-in {
+    animation: fade-in 0.3s ease-out forwards;
+  }
+
+  .animate-slide-up {
+    animation: slide-up 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+}
+
+/* Global Smoothness */
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: #0a0a0f;
+}
+::-webkit-scrollbar-thumb {
+  background: #1c1c27;
+  border-radius: 5px;
+  border: 2px solid #0a0a0f;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #2a2a3a;
 }

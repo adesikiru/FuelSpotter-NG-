@@ -2,7 +2,7 @@
  * Returns a reliability label and color based on report count.
  * The more crowd reports a station has, the more trustworthy its data is.
  */
-export function getReliability(reportCount = 0) {
+export function getReliability(reportCount: number = 0) {
   if (reportCount >= 15) {
     return { label: 'High reliability', level: 'high', color: 'text-fuel-green', bars: 3 }
   }

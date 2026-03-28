@@ -5,8 +5,7 @@ export const metadata = {
   title: 'FuelSpotter NG — Find Fuel in Nigeria',
   description: 'Real-time crowd-powered fuel availability tracker for Nigerian drivers.',
 }
-
-export default function RootLayout({ children }) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <body>

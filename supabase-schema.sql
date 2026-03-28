@@ -32,12 +32,48 @@ create table if not exists reports (
   created_at   timestamptz default now()
 );
 
--- 3. INDEXES
+-- 3. PROFILES TABLE
+-- Extends Supabase Auth users with custom fields.
+create table if not exists profiles (
+  id           uuid primary key references auth.users(id) on delete cascade,
+  full_name    text,
+  avatar_url   text,
+  email        text unique,
+  created_at   timestamptz default now(),
+  updated_at   timestamptz default now()
+);
+
+-- Enable RLS on profiles
+alter table profiles enable row level security;
+
+-- Users can read their own profile
+create policy "Users can view own profile"
+  on profiles for select using (auth.uid() = id);
+
+-- Users can update their own profile
+create policy "Users can update own profile"
+  on profiles for update using (auth.uid() = id);
+
+-- Trigger to create profile on signup
+create or replace function public.handle_new_user()
+returns trigger as $$
+begin
+  insert into public.profiles (id, full_name, email)
+  values (new.id, new.raw_user_meta_data->>'full_name', new.email);
+  return new;
+end;
+$$ language plpgsql security modeller;
+
+create or replace trigger on_auth_user_created
+  after insert on auth.users
+  for each row execute procedure public.handle_new_user();
+
+-- 4. INDEXES
 create index if not exists reports_station_id_idx on reports(station_id);
 create index if not exists stations_fuel_status_idx on stations(fuel_status);
 create index if not exists stations_last_updated_idx on stations(last_updated desc);
 
--- 4. ROW LEVEL SECURITY
+-- 5. ROW LEVEL SECURITY
 -- Allow public reads. Only authenticated users (or anon) can insert reports.
 alter table stations enable row level security;
 alter table reports  enable row level security;
@@ -50,15 +86,15 @@ create policy "Public read stations"
 create policy "Public read reports"
   on reports for select using (true);
 
--- Anyone can insert a report (anon key is fine for MVP)
-create policy "Public insert reports"
+-- Authenticated users can insert reports (or anyone if you want to keep it open)
+create policy "Anyone can insert reports"
   on reports for insert with check (true);
 
 -- Anyone can update a station (triggered by report submission)
 create policy "Public update stations"
   on stations for update using (true);
 
--- 5. REAL-TIME
+-- 6. REAL-TIME
 -- Enable real-time updates for the stations table
 alter publication supabase_realtime add table stations;
 

@@ -4,7 +4,8 @@ import { useState, useEffect, useCallback } from 'react'
 import clsx from 'clsx'
 import StationCard from './StationCard'
 import { subscribeToStations } from '@/services/stationService'
-import { getUserLocation, sortByDistance, formatDistance } from '@/utils/distanceCalculator'
+import { getUserLocation, sortByDistance, formatDistance, haversineDistance } from '@/utils/distanceCalculator'
+import { Station, ReportCounts } from '@/types'
 
 const FILTERS = [
   { key: 'all', label: 'All' },
@@ -13,16 +14,16 @@ const FILTERS = [
   { key: 'unknown', label: 'Unknown' },
 ]
 
-export default function StationList({ initialStations, reportCounts }) {
+export default function StationList({ initialStations, reportCounts }: { initialStations: Station[], reportCounts: ReportCounts }) {
   const [stations, setStations] = useState(initialStations)
   const [filter, setFilter] = useState('all')
-  const [userLocation, setUserLocation] = useState(null)
+  const [userLocation, setUserLocation] = useState<{lat: number, lng: number} | null>(null)
   const [locationLoading, setLocationLoading] = useState(false)
-  const [locationError, setLocationError] = useState(null)
+  const [locationError, setLocationError] = useState<string | null>(null)
 
   // Subscribe to real-time updates
   useEffect(() => {
-    const channel = subscribeToStations((payload) => {
+    const channel = subscribeToStations((payload: any) => {
       if (payload.eventType === 'UPDATE') {
         setStations(prev =>
           prev.map(s => s.id === payload.new.id ? payload.new : s)
@@ -40,7 +41,7 @@ export default function StationList({ initialStations, reportCounts }) {
     try {
       const loc = await getUserLocation()
       setUserLocation(loc)
-    } catch {
+    } catch (e) {
       setLocationError('Could not get your location. Please allow location access.')
     } finally {
       setLocationLoading(false)
@@ -111,7 +112,7 @@ export default function StationList({ initialStations, reportCounts }) {
               {userLocation && station.latitude && station.longitude && (
                 <p className="text-xs text-fuel-muted mb-1 pl-1">
                   {formatDistance(
-                    require('@/utils/distanceCalculator').haversineDistance(
+                    haversineDistance(
                       userLocation.lat, userLocation.lng,
                       station.latitude, station.longitude
                     )
